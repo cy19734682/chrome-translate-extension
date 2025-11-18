@@ -1,0 +1,447 @@
+/* ===== host：在Shadow DOM 中变量才会生效 ===== */
+:host {
+  --grad-start: #667eea;
+  --grad-end: #764ba2;
+  --bg: #fff;
+  --radius: 8px;
+  --shadow: 0 8px 24px rgba(0, 0, 0, .15);
+  --text: #333;
+  --subtext: #666;
+  --border: #ddd;
+  --hover-shadow: 0 4px 12px rgba(102, 126, 234, .35);
+}
+
+/* ===== root：提供给外部调用 ===== */
+:root {
+  --grad-start: #667eea;
+  --grad-end: #764ba2;
+  --bg: #fff;
+  --radius: 8px;
+  --shadow: 0 8px 24px rgba(0, 0, 0, .15);
+  --text: #333;
+  --subtext: #666;
+  --border: #ddd;
+  --hover-shadow: 0 4px 12px rgba(102, 126, 234, .35);
+}
+
+/*右键菜单相关样式 start*/
+.translate-img img {
+  cursor: pointer;
+  background: var(--bg);
+}
+
+/* ===== 容器 ===== */
+.translate-popup {
+  background: var(--bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  font: 14px/1.5 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+  color: var(--text);
+}
+
+/* ===== 头部 ===== */
+.pop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, var(--grad-start) 0%, var(--grad-end) 100%);
+  color: #fff;
+  font-size: 15px;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.pop-header-right{
+  display: flex;
+  align-items: center;
+}
+
+.pop-close {
+  cursor: pointer;
+  font-size: 18px;
+  opacity: .8;
+  transition: opacity .2s;
+  padding-left: 15px;
+}
+
+.pop-close:hover {
+  opacity: 1
+}
+
+/* ===== 语言行 ===== */
+.pop-lang-row {
+  display: flex;
+  gap: 12px;
+  padding: 12px 14px 0;
+}
+
+.lang-box {
+  flex: 1
+}
+
+.lang-box label {
+  display: block;
+  font-size: 12px;
+  color: var(--subtext);
+  margin-bottom: 4px;
+}
+
+.lang-box select {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  background: var(--bg);
+  transition: border .2s;
+}
+
+.lang-box select:focus {
+  outline: none;
+  border-color: var(--grad-start);
+}
+
+/* ===== 按钮 ===== */
+.pop-btn {
+  width: calc(100% - 28px);
+  margin: 12px 14px;
+  padding: 8px 0;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--grad-start) 0%, var(--grad-end) 100%);
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: box-shadow .2s;
+}
+
+.pop-btn:hover {
+  box-shadow: var(--hover-shadow)
+}
+
+/* ===== 结果区 ===== */
+.pop-result {
+  position: relative;
+  min-height: 60px;
+  max-height: 140px;
+  overflow-y: auto;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.6;
+  background: #fff;
+  border-radius: 0 0 var(--radius) var(--radius);
+  white-space: pre-wrap;
+  word-break: break-word
+}
+
+.pop-loader {
+  position: absolute;
+  top: 20px;
+  left:235px;
+  width: 20px;
+  height: 20px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid var(--grad-start);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+/*右键菜单相关样式 end*/
+
+/****弹出层样式 start*****/
+.popup-container {
+  width: 220px;
+  padding: 16px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  border-radius: 8px;
+}
+
+.popup-container  .header {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.popup-container  .header h2 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.popup-container .form-group {
+  margin-bottom: 16px;
+}
+
+.popup-container .language-select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.popup-container .language-select:focus {
+  border-color: #4285f4;
+  box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.1);
+}
+
+.popup-container  .actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.toggle-group {
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.toggle-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: #5f6368;
+}
+.setting-group{
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 8px;
+}
+
+
+/****弹出层样式 end*****/
+
+/*****设置页面样式 start*****/
+
+.options-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.options-container .options-header {
+  text-align: center;
+  margin-bottom: 32px;
+  border-bottom: 2px solid #4285f4;
+  padding-bottom: 16px;
+}
+
+.options-container .options-header h1 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.options-container  .settings-section {
+  margin-bottom: 32px;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.options-container .settings-section h2 {
+  margin-top: 0;
+  color: #4285f4;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 8px;
+}
+
+.options-container .form-group {
+  margin-bottom: 16px;
+}
+
+.options-container .form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #555;
+}
+
+.options-container .form-group input,
+.options-container .form-group select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.options-container .form-group small {
+  display: block;
+  margin-top: 4px;
+  color: #666;
+}
+
+.options-container .form-group small a {
+  color: #4285f4;
+  text-decoration: none;
+}
+
+.options-container .form-group small a:hover {
+  text-decoration: underline;
+}
+
+.options-container .actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.options-container .status-message {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.options-container .status-message.success {
+  background: #e8f5e8;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+.options-container .status-message.error {
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
+}
+/*****设置页面样式 end*****/
+
+/******公共样式 start*****/
+
+/*按钮样式*/
+.btn-primary {
+  background: linear-gradient(135deg, var(--grad-start) 0%, var(--grad-end) 100%);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-reset {
+  background: #f8f9fa;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+/* 开关样式 */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background: linear-gradient(135deg, var(--grad-start) 0%, var(--grad-end) 100%);
+}
+
+input:checked + .slider:before {
+  transform: translateX(18px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.flex{
+  display: flex;
+  justify-content: space-between;
+}
+
+.setting-icon{
+  background-color: transparent;
+  border-radius: 4px;
+  background-image: url(../icons/setting-black.png);
+  cursor: pointer;
+  border: 0 none;
+  height: 25px;
+  width: 25px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+}
+
+.setting-icon.icon-white{
+  width: 20px;
+  height: 20px;
+  background-image: url(../icons/setting-white.png);
+}
+
+.setting-icon:hover {
+  opacity: .8;
+  transition: opacity .2s;
+}
+
+/******公共样式 start*****/

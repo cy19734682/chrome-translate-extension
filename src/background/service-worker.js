@@ -1,19 +1,44 @@
+import { constantCommonlyLanguages } from '../utils/constant.js'
+
+const ID = 'translate-page'
+
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
-    id: 'translate-page',
-    title: '翻译当前页面（中/英）',
-    contexts: ['page'],
+    id: ID,
+    title: '网页翻译',
+    contexts: ['selection', 'page'],
+  })
+  
+  // 子菜单
+  constantCommonlyLanguages.forEach(item => {
+    chrome.contextMenus.create({
+      id: `${ID}-${item.value}`,
+      parentId: ID,
+      title: item.label,
+      contexts: ['selection', 'page']
+    })
   })
 })
 
+/**
+ * 监听上下文菜单点击事件
+ */
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === 'translate-page') {
-    chrome.tabs.sendMessage(tab.id, { action: 'translatePage' , isRight: true })
+  const menuItem = constantCommonlyLanguages?.find(item => `${ID}-${item.value}` === info.menuItemId)
+  if (menuItem) {
+    chrome.tabs.sendMessage(tab.id, {
+      action: 'translatePage',
+      targetLang: menuItem?.value,
+      text: info.selectionText
+    })
   }
 })
 
+/**
+ * 监听运行时消息事件
+ */
 chrome.runtime.onMessage.addListener((request) => {
   if (request.action === "openOptionsPage") {
-    chrome.runtime.openOptionsPage();
+    chrome.runtime.openOptionsPage()
   }
-});
+})

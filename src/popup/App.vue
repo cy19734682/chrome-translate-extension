@@ -1,7 +1,8 @@
 <template>
   <div class="popup-container">
     <div class="header">
-      <h2>网页翻译</h2>
+      <span class="header-title">网页翻译</span>
+      <button type="button" class="setting-icon" @click="openOptions"></button>
     </div>
     <div class="form-group">
       <select v-model="pageTranslationLanguage" class="language-select">
@@ -19,9 +20,6 @@
           <span class="slider round"></span>
         </label>
       </label>
-    </div>
-    <div class="setting-group" @click="openOptions">
-      <button type="button" class="setting-icon"></button>
     </div>
   </div>
 </template>

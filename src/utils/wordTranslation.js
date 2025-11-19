@@ -35,7 +35,7 @@ function createIcon() {
 }
 
 // 创建弹窗
-function createPopup(text) {
+function createPopup(text, targetLang) {
   if (popupDiv) {
     return popupDiv
   }
@@ -90,12 +90,19 @@ function createPopup(text) {
   }
   // 初始化时就翻译一次
   setTimeout(async () => {
-    const result = await chrome.storage.sync.get(['localLanguage', 'pageTranslationLanguage'])
-    const localLanguage = result?.localLanguage || 'auto'
-    const pageTranslationLanguage = result?.pageTranslationLanguage || 'chinese_simplified'
-    shadow.querySelector('#srcLang').value = localLanguage
-    shadow.querySelector('#tgtLang').value = pageTranslationLanguage
-    translateFunc(text, localLanguage, pageTranslationLanguage)
+    if(targetLang){
+      //targetLang 存在时，说明是划词后右键翻译，源语言默认自动识别
+      shadow.querySelector('#srcLang').value = 'auto'
+      shadow.querySelector('#tgtLang').value = targetLang
+      translateFunc(text, 'auto', targetLang)
+    }else {
+      const result = await chrome.storage.sync.get(['localLanguage', 'pageTranslationLanguage'])
+      const localLanguage = result?.localLanguage || 'auto'
+      const pageTranslationLanguage = result?.pageTranslationLanguage || 'chinese_simplified'
+      shadow.querySelector('#srcLang').value = localLanguage
+      shadow.querySelector('#tgtLang').value = pageTranslationLanguage
+      translateFunc(text, localLanguage, pageTranslationLanguage)
+    }
   }, 50)
   return popupDiv
 }
@@ -105,7 +112,7 @@ function translateFunc(text, src, tgt) {
   try {
     // 自动获取本地语言
     if(src === 'auto'){
-      src = translate.language.getLocal()
+      src = translateRecognition(text)
     }
     popupDiv._shadow.querySelector('#transResult').innerHTML = `<div class="pop-loader"></div>`
     translate.request.translateText({
@@ -118,6 +125,18 @@ function translateFunc(text, src, tgt) {
   }
   catch (error) {
     popupDiv._shadow.querySelector('#transResult').textContent = '翻译失败：' + error.message
+  }
+}
+
+// 识别当前待翻译的语言
+function translateRecognition(text) {
+  const localLanguage = translate.language.getLocal()
+  try {
+    let lang = translate.language.recognition(text)
+    return lang?.languageName || localLanguage
+  }
+  catch (error) {
+    return localLanguage
   }
 }
 
@@ -139,21 +158,18 @@ const showIcon = (e) => {
   imgElement.style.left = (lastMouseX + 8) + 'px'
   imgElement.style.top = (lastMouseY + 8) + 'px'
 }
+
 // 显示弹窗
-const showPopup = (text) => {
+export const showPopup = (text, targetLang) => {
   // 如果弹窗已显示，不重复显示图标
   if (popupDiv) {
     return
   }
-  const popup = createPopup(text)
+  const popup = createPopup(text, targetLang)
   const popupElement = popup._popupElement
-  /* 1. 先拿到图标位置（图标已保证在视口内）*/
-  const iconRect = iconDiv._imgElement.getBoundingClientRect() // 相对视口
+  let {top, left, right} = popupPosition()
   const scrollX = window.scrollX
   const scrollY = window.scrollY
-  /* 2. 默认放到图标正下方，与图标左对齐 */
-  let top = iconRect.bottom + 4   // 下方 4px
-  let left = iconRect.left
   // 延时加载，确保弹窗元素和样式已添加到DOM
   setTimeout(() => {
     /* 3. 先让 popup 显示一次，才能拿到它自己的宽高 */
@@ -162,7 +178,7 @@ const showPopup = (text) => {
     /* 4. 水平防溢出 */
     const vw = document.documentElement.clientWidth
     if (left + pw > vw - 4) {          // 右边超了
-      left = iconRect.right - pw      // 贴图标右边
+      left = right - pw      // 贴图标右边
       if (left < 4) {
         left = 4
       }          // 仍然超就贴左边缘
@@ -170,7 +186,7 @@ const showPopup = (text) => {
     /* 5. 垂直防溢出 */
     const vh = document.documentElement.clientHeight
     if (top + ph > vh - 4) {           // 下方超了
-      top = iconRect.top - ph - 140     // 放到图标上方(这里写大点，流出翻译内容的高度)
+      top = top - ph - 140     // 放到图标上方(这里写大点，流出翻译内容的高度)
       if (top < 4) {                   // 上方也超 → 放图标上方但允许滚动
         top = 4
       }
@@ -180,6 +196,33 @@ const showPopup = (text) => {
     popupElement.style.top = (top + scrollY) + 'px'
     popupElement.querySelector('#transResult').textContent = ""
   }, 20)
+}
+
+/**
+ * 弹窗位置调整
+ */
+function popupPosition() {
+  if(iconDiv){
+    // 如果图标存在，则根据图标位置调整弹窗位置
+    const iconRect = iconDiv._imgElement.getBoundingClientRect() // 相对视口
+    let top = iconRect.bottom + 4   // 下方 4px
+    let left = iconRect.left
+    let right = iconRect.right
+    return {top, left, right}
+  }else {
+    let top = document.documentElement.clientWidth / 2 - 140
+    let left = document.documentElement.clientHeight / 2 - 250
+    let right = 0
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return {top, left, right};
+    const wholeRange = sel.getRangeAt(0);
+    if (wholeRange.collapsed) return {top, left, right};
+    const outerRect = wholeRange.getBoundingClientRect();
+    top = outerRect.bottom + 4   // 下方 4px
+    left = outerRect.left
+    right = outerRect.right
+    return {top, left, right}
+  }
 }
 
 
@@ -202,6 +245,10 @@ const hidePopup = () => {
 
 // 监听鼠标释放事件
 document.addEventListener('mouseup', e => {
+  // 非左键点击，不处理
+  if (e.button !== 0) {
+    return
+  }
   chrome.storage.sync.get('showWordTranslationIcon', (result) => {
     if (!!result.showWordTranslationIcon) {
       setTimeout(() => {          // 让选区先完成
@@ -219,16 +266,16 @@ document.addEventListener('mouseup', e => {
 
 // 点击空白处关闭弹窗/图标
 document.addEventListener('mousedown', e => {
-  chrome.storage.sync.get('showWordTranslationIcon', (result) => {
-    if (!!result.showWordTranslationIcon) {
-      if (popupDiv && popupDiv.contains(e.target)) {
-        return
-      }
-      if (iconDiv && iconDiv.contains(e.target)) {
-        return;
-      }
-      hideIcon();
-      hidePopup();
-    }
-  });
+  // 非左键点击，不处理
+  if (e.button !== 0) {
+    return
+  }
+  if (popupDiv && popupDiv.contains(e.target)) {
+    return
+  }
+  if (iconDiv && iconDiv.contains(e.target)) {
+    return
+  }
+  hideIcon()
+  hidePopup()
 });

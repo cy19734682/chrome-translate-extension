@@ -295,3 +295,49 @@ export const constantLanguages = [
     "value": "maori"
   }
 ]
+
+/**
+ * 常用语言列表
+ */
+export const constantCommonlyLanguages = [
+  {
+    "label": "简体中文",
+    "value": "chinese_simplified"
+  },
+  {
+    "label": "繁體中文",
+    "value": "chinese_traditional"
+  },
+  {
+    "label": "English",
+    "value": "english"
+  },
+  {
+    "label": "しろうと",
+    "value": "japanese"
+  },
+  {
+    "label": "한국어",
+    "value": "korean"
+  },
+  {
+    "label": "Українська",
+    "value": "ukrainian"
+  },
+  {
+    "label": "Русский язык",
+    "value": "russian"
+  },
+  {
+    "label": "Français",
+    "value": "french"
+  },
+  {
+    "label": "Español",
+    "value": "spanish"
+  },
+  {
+    "label": "português",
+    "value": "portuguese"
+  }
+]

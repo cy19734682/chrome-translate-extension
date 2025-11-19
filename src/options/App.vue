@@ -23,7 +23,14 @@
         <div class="form-group flex">
           <label>显示划词翻译图标:</label>
           <label class="switch">
-            <input type="checkbox" v-model="showWordTranslationIcon" @change="toggleWordTranslation">
+            <input type="checkbox" v-model="showWordTranslationIcon">
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div class="form-group flex">
+          <label>自动翻译页面(需要执行一次网页翻译):</label>
+          <label class="switch">
+            <input type="checkbox" v-model="autoTranslationPage">
             <span class="slider round"></span>
           </label>
         </div>
@@ -47,41 +54,34 @@
   const localLanguage = ref('auto');
   const pageTranslationLanguage = ref('chinese_simplified');
   const showWordTranslationIcon = ref(false);
+  const autoTranslationPage = ref(false);
   // 支持的语言列表
   const languages = constantLanguages
   const saveStatus = ref(null)
 
   onMounted(async () => {
-    const result = await chrome.storage.sync.get(['localLanguage', 'pageTranslationLanguage', 'showWordTranslationIcon'])
+    const result = await chrome.storage.sync.get(['localLanguage', 'pageTranslationLanguage', 'showWordTranslationIcon', 'autoTranslationPage'])
     if (result.localLanguage !== undefined) {
       localLanguage.value = result.localLanguage;
     }
-
     if (result.pageTranslationLanguage !== undefined) {
       pageTranslationLanguage.value = result.pageTranslationLanguage;
     }
-
     if (result.showWordTranslationIcon !== undefined) {
       showWordTranslationIcon.value = !!result.showWordTranslationIcon;
     }
+    if (result.autoTranslationPage !== undefined) {
+      autoTranslationPage.value = !!result.autoTranslationPage;
+    }
   })
-
-
-
-  // 切换划词翻译图标显示状态
-  async function toggleWordTranslation() {
-    // 保存设置到Chrome存储
-    await chrome.storage.sync.set({
-      showWordTranslationIcon: showWordTranslationIcon.value
-    });
-  }
 
   const saveSettings = async () => {
     try {
       await chrome.storage.sync.set({
         localLanguage: localLanguage.value,
         pageTranslationLanguage: pageTranslationLanguage.value,
-        showWordTranslationIcon: showWordTranslationIcon.value
+        showWordTranslationIcon: showWordTranslationIcon.value,
+        autoTranslationPage: autoTranslationPage.value
       })
       saveStatus.value = {
         type: 'success',
@@ -102,10 +102,12 @@
     localLanguage.value = 'chinese_simplified';
     pageTranslationLanguage.value = 'english';
     showWordTranslationIcon.value = false;
+    autoTranslationPage.value = false;
     await chrome.storage.sync.set({
       localLanguage: localLanguage.value,
       pageTranslationLanguage: pageTranslationLanguage.value,
-      showWordTranslationIcon: showWordTranslationIcon.value
+      showWordTranslationIcon: showWordTranslationIcon.value,
+      autoTranslationPage: autoTranslationPage.value
     })
   }
 </script>

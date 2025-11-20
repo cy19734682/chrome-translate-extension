@@ -283,8 +283,7 @@
   color: #555;
 }
 
-.options-container .form-group input,
-.options-container .form-group select {
+.options-container .form-group select.language-select {
   width: 100%;
   padding: 8px 12px;
   border: 1px solid #ddd;
@@ -305,6 +304,40 @@
 
 .options-container .form-group small a:hover {
   text-decoration: underline;
+}
+
+.options-container .white-container {
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background: #ffffff;
+  padding: 10px;
+  max-height: 250px;
+  overflow: auto;
+}
+
+.options-container .white-container .white-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.options-container .white-container .white-item span {
+  width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.options-container .white-container .white-item select {
+  width: 200px;
+  padding: 5px 12px;
+  font-size: 12px;
+}
+
+.options-container .white-container .white-item button {
+  padding: 5px;
+  font-size: 12px;
 }
 
 .options-container .actions {

@@ -8,8 +8,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }else {
       const targetLang = request.targetLang || 'chinese_simplified'
       translate.changeLanguage(targetLang)
-      chrome.storage.sync.set({
-        autoTranslationLanguage: targetLang
+      // 获取自动翻译网站白名单，判断当前网站是否在白名单中, 如果不在白名单中, 则添加到白名单中,如果在白名单中, 则更新语言
+      chrome.storage.local.get(['autoTranslationPageWhitelist'], (res) => {
+        const whitelist = res?.autoTranslationPageWhitelist || []
+        const _index = whitelist?.findIndex(item => item?.hostname === window.location.hostname)
+        if(_index === -1){
+          // 如果不在白名单中, 则添加到白名单中
+          whitelist.push({
+            hostname: window.location.hostname,
+            language: targetLang
+          })
+        }else {
+          // 如果在白名单中, 则更新语言
+          whitelist[_index].language = targetLang
+        }
+        chrome.storage.local.set({
+          autoTranslationPageWhitelist: whitelist
+        })
       })
       sendResponse({ status: 'Translation started' })
     }
@@ -18,9 +33,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 // 自动翻译页面
 function autoTranslationPage() {
-  chrome.storage.sync.get(['autoTranslationPage', 'autoTranslationLanguage'], (res) => {
-    if (res.autoTranslationPage && res.autoTranslationLanguage) {
-      translate.changeLanguage(res.autoTranslationLanguage)
+  chrome.storage.local.get(['autoTranslationPageWhitelist','autoTranslationPage'], (res) => {
+    const whiteObj = res?.autoTranslationPageWhitelist?.find(item => item?.hostname === window.location.hostname)
+    if (whiteObj?.language && res?.autoTranslationPage) {
+      translate.changeLanguage(whiteObj.language)
     }
   })
 }

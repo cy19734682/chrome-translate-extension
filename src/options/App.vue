@@ -9,28 +9,46 @@
         <h2>默认设置</h2>
         <div class="form-group">
           <label>当前语言:</label>
-          <select v-model="localLanguage">
+          <select class="language-select" v-model="localLanguage">
             <option value="auto">自动</option>
             <option v-for="item in languages" :value="item.value">{{ item.label }}</option>
           </select>
         </div>
         <div class="form-group">
           <label>目标语言:</label>
-          <select v-model="pageTranslationLanguage">
+          <select class="language-select" v-model="pageTranslationLanguage">
             <option v-for="item in languages" :value="item.value">{{ item.label }}</option>
           </select>
+        </div>
+        <div class="form-group" v-if="autoTranslationPageWhitelist.length > 0">
+          <label>自动翻译页面白名单:</label>
+          <!---展示域名和翻译目标语言，翻译语言可修改，并且提供删除按钮-->
+          <div class="white-container">
+            <div class="white-item" style="color: #666666;">
+              <span>域名</span>
+              <span>目标语言</span>
+              <span style="width: 30px;">操作</span>
+            </div>
+            <div class="white-item" v-for="(item, index) in autoTranslationPageWhitelist" :key="item.hostname">
+              <span class="hostname">{{ item.hostname }}</span>
+              <select class="language-select" v-model="item.language">
+                <option v-for="lang in languages" :value="lang.value">{{ lang.label }}</option>
+              </select>
+              <button class="btn-reset" @click="removeWhitelist(index)">删除</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group flex">
+          <label>自动翻译页面:</label>
+          <label class="switch">
+            <input type="checkbox" v-model="autoTranslationPage">
+            <span class="slider round"></span>
+          </label>
         </div>
         <div class="form-group flex">
           <label>显示划词翻译图标:</label>
           <label class="switch">
             <input type="checkbox" v-model="showWordTranslationIcon">
-            <span class="slider round"></span>
-          </label>
-        </div>
-        <div class="form-group flex">
-          <label>自动翻译页面(需要执行一次网页翻译):</label>
-          <label class="switch">
-            <input type="checkbox" v-model="autoTranslationPage">
             <span class="slider round"></span>
           </label>
         </div>
@@ -47,47 +65,41 @@
 </template>
 
 <script setup>
-  import { ref, onMounted } from 'vue'
-  import { constantLanguages } from "../utils/constant";
+  import {ref, onMounted} from 'vue'
+  import {constantLanguages} from "../utils/constant"
 
 
-  const localLanguage = ref('auto');
-  const pageTranslationLanguage = ref('chinese_simplified');
-  const showWordTranslationIcon = ref(false);
-  const autoTranslationPage = ref(false);
+  const localLanguage = ref('auto')
+  const pageTranslationLanguage = ref('chinese_simplified')
+  const showWordTranslationIcon = ref(false)
+  const autoTranslationPage = ref(false)
+  //自动翻译网站白名单
+  const autoTranslationPageWhitelist = ref([])
+
   // 支持的语言列表
   const languages = constantLanguages
   const saveStatus = ref(null)
 
-  onMounted(async () => {
-    const result = await chrome.storage.sync.get(['localLanguage', 'pageTranslationLanguage', 'showWordTranslationIcon', 'autoTranslationPage'])
-    if (result.localLanguage !== undefined) {
-      localLanguage.value = result.localLanguage;
-    }
-    if (result.pageTranslationLanguage !== undefined) {
-      pageTranslationLanguage.value = result.pageTranslationLanguage;
-    }
-    if (result.showWordTranslationIcon !== undefined) {
-      showWordTranslationIcon.value = !!result.showWordTranslationIcon;
-    }
-    if (result.autoTranslationPage !== undefined) {
-      autoTranslationPage.value = !!result.autoTranslationPage;
-    }
-  })
+  //删除自动翻译网站白名单
+  const removeWhitelist = (index) => {
+    autoTranslationPageWhitelist.value.splice(index, 1)
+  }
 
   const saveSettings = async () => {
     try {
-      await chrome.storage.sync.set({
+      await chrome.storage.local.set({
         localLanguage: localLanguage.value,
         pageTranslationLanguage: pageTranslationLanguage.value,
         showWordTranslationIcon: showWordTranslationIcon.value,
-        autoTranslationPage: autoTranslationPage.value
+        autoTranslationPage: autoTranslationPage.value,
+        autoTranslationPageWhitelist: JSON.parse(JSON.stringify(autoTranslationPageWhitelist.value))
       })
       saveStatus.value = {
         type: 'success',
         message: '设置保存成功!'
       }
-    } catch (error) {
+    }
+    catch (error) {
       saveStatus.value = {
         type: 'error',
         message: '保存失败: ' + error.message
@@ -99,15 +111,45 @@
   }
 
   const resetSettings = async () => {
-    localLanguage.value = 'chinese_simplified';
-    pageTranslationLanguage.value = 'english';
-    showWordTranslationIcon.value = false;
-    autoTranslationPage.value = false;
-    await chrome.storage.sync.set({
+    if (!confirm('确认要恢复默认设置吗？')) {
+      return
+    }
+    localLanguage.value = 'chinese_simplified'
+    pageTranslationLanguage.value = 'english'
+    showWordTranslationIcon.value = false
+    autoTranslationPage.value = false
+    autoTranslationPageWhitelist.value = []
+    await chrome.storage.local.set({
       localLanguage: localLanguage.value,
       pageTranslationLanguage: pageTranslationLanguage.value,
       showWordTranslationIcon: showWordTranslationIcon.value,
-      autoTranslationPage: autoTranslationPage.value
+      autoTranslationPage: autoTranslationPage.value,
+      autoTranslationPageWhitelist: JSON.parse(JSON.stringify(autoTranslationPageWhitelist.value))
     })
   }
+
+  onMounted(async () => {
+    const result = await chrome.storage.local.get([
+      'localLanguage',
+      'pageTranslationLanguage',
+      'showWordTranslationIcon',
+      'autoTranslationPage',
+      'autoTranslationPageWhitelist'
+    ])
+    if (result.localLanguage !== undefined) {
+      localLanguage.value = result.localLanguage
+    }
+    if (result.pageTranslationLanguage !== undefined) {
+      pageTranslationLanguage.value = result.pageTranslationLanguage
+    }
+    if (result.showWordTranslationIcon !== undefined) {
+      showWordTranslationIcon.value = !!result.showWordTranslationIcon
+    }
+    if (result.autoTranslationPage !== undefined) {
+      autoTranslationPage.value = !!result.autoTranslationPage
+    }
+    if (result.autoTranslationPageWhitelist !== undefined) {
+      autoTranslationPageWhitelist.value = result.autoTranslationPageWhitelist || []
+    }
+  })
 </script>

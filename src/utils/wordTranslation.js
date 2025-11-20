@@ -96,7 +96,7 @@ function createPopup(text, targetLang) {
       shadow.querySelector('#tgtLang').value = targetLang
       translateFunc(text, 'auto', targetLang)
     }else {
-      const result = await chrome.storage.sync.get(['localLanguage', 'pageTranslationLanguage'])
+      const result = await chrome.storage.local.get(['localLanguage', 'pageTranslationLanguage'])
       const localLanguage = result?.localLanguage || 'auto'
       const pageTranslationLanguage = result?.pageTranslationLanguage || 'chinese_simplified'
       shadow.querySelector('#srcLang').value = localLanguage
@@ -249,7 +249,7 @@ document.addEventListener('mouseup', e => {
   if (e.button !== 0) {
     return
   }
-  chrome.storage.sync.get('showWordTranslationIcon', (result) => {
+  chrome.storage.local.get('showWordTranslationIcon', (result) => {
     if (!!result.showWordTranslationIcon) {
       setTimeout(() => {          // 让选区先完成
         const text = window.getSelection().toString().trim()
@@ -266,10 +266,6 @@ document.addEventListener('mouseup', e => {
 
 // 点击空白处关闭弹窗/图标
 document.addEventListener('mousedown', e => {
-  // 非左键点击，不处理
-  if (e.button !== 0) {
-    return
-  }
   if (popupDiv && popupDiv.contains(e.target)) {
     return
   }

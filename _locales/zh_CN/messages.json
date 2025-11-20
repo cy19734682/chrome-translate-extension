@@ -1,0 +1,29 @@
+{
+  "extName": {
+    "message": "网页翻译器"
+  },
+  "extDesc": {
+    "message": "使用Vue3开发的网页翻译插件"
+  },
+  "menuTitle": {
+    "message": "网页翻译"
+  },
+  "translateSelection": {
+    "message": "划词翻译"
+  },
+  "sourceLanguage": {
+    "message": "源语言"
+  },
+  "targetLanguage": {
+    "message": "目标语言"
+  },
+  "auto": {
+    "message": "自动"
+  },
+  "translate": {
+    "message": "翻 译"
+  },
+  "translateFailed": {
+    "message": "翻译失败"
+  }
+}

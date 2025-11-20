@@ -1,0 +1,20 @@
+{
+	"webTranslate": "Web Translate",
+	"translateCurrentPage": "Translate Current Page",
+	"showWordTranslationIcon": "Show Word Translation Icon",
+	"autoTranslationPage": "Auto Translation Page",
+	"translateSetting": "Translate Setting",
+	"defaultSetting": "Default Setting",
+	"currentLanguage": "Current Language",
+	"auto": "Auto",
+	"targetLanguage": "Target Language",
+	"autoTranslationPageWhitelist": "Auto Translation Page Whitelist",
+	"hostName": "Host Name",
+	"operation": "Operation",
+	"delete": "Delete",
+	"saveSetting": "Save Setting",
+	"resetDefault": "Reset Default",
+	"settingSuccess": "Setting Saved Successfully!",
+	"settingFailed": "Setting Save Failed",
+	"confirmResetDefault": "Are you sure you want to reset to default settings?"
+}

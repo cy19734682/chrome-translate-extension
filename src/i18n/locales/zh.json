@@ -1,0 +1,20 @@
+{
+	"webTranslate": "网页翻译",
+	"translateCurrentPage": "翻译当前页面",
+	"showWordTranslationIcon": "显示划词翻译图标",
+	"autoTranslationPage": "网页自动翻译",
+	"translateSetting": "翻译插件设置",
+	"defaultSetting": "默认设置",
+	"currentLanguage": "当前语言",
+	"auto": "自动",
+	"targetLanguage": "目标语言",
+	"autoTranslationPageWhitelist": "自动翻译页面白名单",
+	"hostName": "域名",
+	"operation": "操作",
+	"delete": "删除",
+	"saveSetting": "保存设置",
+	"resetDefault": "恢复默认",
+	"settingSuccess": "设置保存成功!",
+	"settingFailed": "保存失败",
+	"confirmResetDefault": "确认要恢复默认设置吗?"
+}

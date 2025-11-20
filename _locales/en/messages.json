@@ -1,0 +1,29 @@
+{
+  "extName": {
+    "message": "Web Translate Extension"
+  },
+  "extDesc": {
+    "message": "A web translate extension developed with Vue3"
+  },
+  "menuTitle": {
+    "message": "Web Translate"
+  },
+  "translateSelection": {
+    "message": "Translate Selection"
+  },
+  "sourceLanguage": {
+    "message": "Source Language"
+  },
+  "targetLanguage": {
+    "message": "Target Language"
+  },
+  "auto": {
+    "message": "Auto"
+  },
+  "translate": {
+    "message": "Translate"
+  },
+  "translateFailed": {
+    "message": "Translate Failed"
+  }
+}
